@@ -31,7 +31,7 @@ __global__ void compAcc(vector3 *hPos, vector3 *accels, double *mass){
 	}
 } 
 
-__global__ void sum(vector3 *hPos, vector3 *hVel, vector3 *accels, vector3 *accel_sum){
+__global__ void cudaSum(vector3 *hPos, vector3 *hVel, vector3 *accels, vector3 *accel_sum){
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
 	if (i < NUMENTITIES){
 		FILL_VECTOR(accel_sum[i], 0, 0, 0);
@@ -69,7 +69,7 @@ void compute(){
 	compAcc<<<gridDim, blockDim>>>(dhPos, daccel, dmass);
 	cudaDeviceSynchronize();
 
-	sum<<<gridDim.x, blockDim.x>>>(daccel, dsum, dhPos, dhVel);
+	cudaSum<<<gridDim.x, blockDim.x>>>(daccel, dsum, dhPos, dhVel);
 	cudaDeviceSynchronize();
 
 	cudaMemcpy(hPos, dhPos, sizeof(vector3)*NUMENTITIES, cudaMemcpyDeviceToHost);
